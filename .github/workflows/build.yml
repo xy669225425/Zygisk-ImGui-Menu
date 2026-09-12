@@ -1,0 +1,33 @@
+name: Build Zygisk Module
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Set up Android SDK
+      uses: android-actions/setup-android@v2
+
+    - name: Build with Gradle
+      run: |
+        chmod +x gradlew
+        ./gradlew :module:assembleRelease
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: zygisk-module
+        path: module/build/outputs/**/*.zip
